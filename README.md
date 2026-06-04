@@ -1,78 +1,51 @@
 # MAC Address Validator API
 
-Validate MAC addresses, convert formats, and identify vendors.
+Validate MAC addresses and extract vendor information from OUI.
 
 ## Endpoints
 
-### `GET /health`
-Health check endpoint. No auth required.
+### GET /health
+Health check endpoint. No API key required.
 
-```bash
-curl https://mac-validator.vercel.app/health
-```
+### POST /validate
+Validate a MAC address, normalize it, and identify the vendor.
 
-### `POST /validate`
-Validate a MAC address and get vendor info.
-
-**Headers:** `X-API-Key: demo-key-change-in-production`
-
-**Body:** Form data with `mac` field
-
-```bash
-curl -X POST https://mac-validator.vercel.app/validate \
-  -H "X-API-Key: demo-key-change-in-production" \
-  -d "mac=00:1A:2B:3C:4D:5E"
+**Request Body:**
+```json
+{
+  "mac_address": "00:1A:2B:3C:4D:5E"
+}
 ```
 
 **Response:**
 ```json
 {
   "valid": true,
-  "original": "00:1A:2B:3C:4D:5E",
   "normalized": "00:1A:2B:3C:4D:5E",
-  "vendor": "Unknown"
+  "oui": "00:1A:2B",
+  "vendor": "Dell",
+  "format_detected": "colon/dash notation"
 }
 ```
 
-### `POST /validate/batch`
-Validate multiple MAC addresses.
+## Usage
 
 ```bash
-curl -X POST https://mac-validator.vercel.app/validate/batch \
-  -H "X-API-Key: demo-key-change-in-production" \
+curl -X POST https://mac-validator.vercel.app/validate \
   -H "Content-Type: application/json" \
-  -d '{"macs": ["00:1A:2B:3C:4D:5E", "00:25:64:12:34:56"]}'
-```
-
-### `GET /format?mac=...&format_type=...`
-Convert MAC address to different formats.
-
-**Headers:** `X-API-Key: demo-key-change-in-production`
-
-**Params:**
-- `mac` - MAC address to convert
-- `format_type` (optional) - Format to convert to
-
-```bash
-curl "https://mac-validator.vercel.app/format?mac=00-1A-2B-3C-4D-5E" \
-  -H "X-API-Key: demo-key-change-in-production"
+  -H "X-API-Key: free-demo-key" \
+  -d '{"mac_address": "B8-27-EB-12-34-56"}'
 ```
 
 ## Supported Formats
+- Colon notation: `00:1A:2B:3C:4D:5E`
+- Dash notation: `00-1A-2B-3C-4D-5E`
+- Dot notation: `001A.2B3C.4D5E`
+- 12-digit hex: `001A2B3C4D5E`
 
-- `colon` (default): `00:1A:2B:3C:4D:5E`
-- `dash`: `00-1A-2B-3C-4D-5E`
-- `dot`: `001A.2B3C.4D5E`
-- `none`: `001A2B3C4D5E`
-
-## Supported MAC Formats
-
-- `00:1A:2B:3C:4D:5E`
-- `00-1A-2B-3C-4D-5E`
-- `001A.2B3C.4D5E`
-- `001A2B3C4D5E`
-
-## Monetization
-
-- List on RapidAPI: $15/month
-- Target: Network administrators, IoT developers, security teams
+## Features
+- Validates MAC address format
+- Normalizes to standard colon notation
+- Extracts OUI (first 3 octets)
+- Identifies vendor from built-in database
+- Detects input format
