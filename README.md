@@ -49,3 +49,6 @@ curl -X POST https://mac-validator.vercel.app/validate \
 - Extracts OUI (first 3 octets)
 - Identifies vendor from built-in database
 - Detects input format
+
+## Postman
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://raw.githubusercontent.com/BT-Builds/mac-validator/main/postman_collection.json)
